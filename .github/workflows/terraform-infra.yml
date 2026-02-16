@@ -7,7 +7,7 @@ on:
       environment:
         description: 'Select environment'
         required: true
-        default: 'stg'
+        default: 'dev'
         type: choice
         options:
           - dev
@@ -17,7 +17,7 @@ on:
       operation:
         description: 'Select operation to perform'
         required: true
-        default: 'apply'
+        default: 'plan'
         type: choice
         options:
           - plan
