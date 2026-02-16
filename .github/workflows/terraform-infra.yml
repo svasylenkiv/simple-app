@@ -27,12 +27,11 @@ jobs:
   plan-infra:
     runs-on: ubuntu-latest
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
       ENVIRONMENT: ${{ github.event.inputs.environment }}
       OPERATION: ${{ github.event.inputs.operation }}
-
 
     defaults:
       run:
@@ -63,7 +62,6 @@ jobs:
             terraform plan -var-file=vars/common.tfvars -var-file=vars/$ENVIRONMENT.tfvars -out=tfplan
           fi
         env:
-          TF_VAR_environment: ${{ github.event.inputs.environment }}
           CI: true
 
       - name: Upload Plan Artifact
@@ -75,11 +73,10 @@ jobs:
 
   apply-infra:
     needs: plan-infra
-    # if: github.event.inputs.operation == 'apply' && contains(github.ref, 'heads/main')
     if: github.event.inputs.operation == 'apply' && (contains(github.ref, 'refs/heads/main') || contains(github.ref, 'refs/heads/hfx'))
     runs-on: ubuntu-latest
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
       ENVIRONMENT: ${{ github.event.inputs.environment }}
@@ -110,15 +107,13 @@ jobs:
         run: |
           echo "Applying Terraform changes for environment: $ENVIRONMENT"
           terraform apply tfplan
-        env:
-          TF_VAR_environment: ${{ github.event.inputs.environment }}
 
   destroy-infra:
     needs: plan-infra
     if: github.event.inputs.operation == 'destroy'
     runs-on: ubuntu-latest
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
       ENVIRONMENT: ${{ github.event.inputs.environment }}
@@ -148,6 +143,4 @@ jobs:
       - name: Terraform Destroy
         run: |
           echo "Destroying infrastructure for environment: $ENVIRONMENT"
-          terraform destroy -var-file=../vars/common.tfvars -var-file=../vars/$ENVIRONMENT.tfvars -auto-approve
-        env:
-          TF_VAR_environment: ${{ github.event.inputs.environment }}      
+          terraform destroy -var-file=vars/common.tfvars -var-file=vars/$ENVIRONMENT.tfvars -auto-approve
