@@ -1,0 +1,54 @@
+name: Nord Terraform Backend Bootstrap
+run-name: ${{ github.event.inputs.project }}-terraform-backend-bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: "Project name"
+        required: true
+        type: choice
+        options: [nord, linux]
+        default: "nord"
+      region:
+        description: "AWS Region"
+        required: true
+        type: choice
+        options: [us-east-1, us-west-2, eu-west-1]        
+        default: "us-east-1"
+
+jobs:
+  create-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.region }}
+
+      - name: Create S3 Bucket
+        run: |
+          BUCKET_NAME="${{ github.event.inputs.project }}-terraform-tfstate"
+          REGION="${{ github.event.inputs.region }}"
+          if [ "$REGION" = "us-east-1" ]; then
+            aws s3api create-bucket \
+              --bucket $BUCKET_NAME \
+              --region $REGION || echo "Bucket exists"
+          else
+            aws s3api create-bucket \
+              --bucket $BUCKET_NAME \
+              --region $REGION \
+              --create-bucket-configuration LocationConstraint=$REGION || echo "Bucket exists"
+          fi
+          aws s3api put-bucket-versioning --bucket $BUCKET_NAME --versioning-configuration Status=Enabled
+
+      - name: Create DynamoDB Table (for state locking)
+        run: |
+          TABLE_NAME="${{ github.event.inputs.project }}-terraform-tf-locks"
+          aws dynamodb create-table \
+            --table-name $TABLE_NAME \
+            --attribute-definitions AttributeName=LockID,AttributeType=S \
+            --key-schema AttributeName=LockID,KeyType=HASH \
+            --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 || echo "Table exists"
