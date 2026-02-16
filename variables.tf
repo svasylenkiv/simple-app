@@ -44,3 +44,4 @@ variable "ec2_ssh_allowed_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+

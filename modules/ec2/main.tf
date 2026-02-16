@@ -50,12 +50,13 @@ resource "aws_security_group" "ec2" {
 }
 
 resource "aws_instance" "main" {
-  ami                    = data.aws_ami.main.id
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  subnet_id              = var.subnet_id
-  vpc_security_group_ids = [aws_security_group.ec2.id]
+  ami                         = data.aws_ami.main.id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = [aws_security_group.ec2.id]
   associate_public_ip_address = true
+  user_data                   = base64encode(file("${path.module}/user_data.sh"))
 
   root_block_device {
     volume_size = var.root_volume_size
