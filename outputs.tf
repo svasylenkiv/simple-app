@@ -37,3 +37,13 @@ output "ec2_private_ip" {
   description = "EC2 private IP address"
   value       = module.ec2.private_ip
 }
+
+output "cloudfront_domain" {
+  description = "CloudFront distribution domain"
+  value       = module.cloudfront.domain_name
+}
+
+output "cloudfront_url" {
+  description = "CloudFront URL (HTTPS)"
+  value       = module.cloudfront.url
+}

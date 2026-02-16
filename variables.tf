@@ -45,3 +45,9 @@ variable "ec2_ssh_allowed_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "cloudfront_price_class" {
+  description = "CloudFront price class (PriceClass_All, PriceClass_200, PriceClass_100)"
+  type        = string
+  default     = "PriceClass_100"
+}
+

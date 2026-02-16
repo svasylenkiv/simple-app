@@ -46,3 +46,12 @@ module "ec2" {
   key_name           = var.ec2_key_name
   ssh_allowed_cidrs  = var.ec2_ssh_allowed_cidrs
 }
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  environment    = var.environment
+  project        = var.project
+  origin_domain  = module.ec2.public_dns
+  price_class    = var.cloudfront_price_class
+}
