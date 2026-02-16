@@ -1,3 +1,6 @@
+# SSH keys (private keys must not be in repo)
+keys/
+
 # Terraform
 .terraform/
 *.tfstate
