@@ -1,1 +1,1 @@
-# nord-infra
+# simple-app
