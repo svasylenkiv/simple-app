@@ -94,7 +94,7 @@ cat <<'EOF' > frontend/index.html
 <html>
 <body>
 
-<h1>Simple Fullstack App</h1>
+<h1>Simple App</h1>
 
 <button onclick="callApi()">Call backend</button>
 <p id="result"></p>
