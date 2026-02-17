@@ -1,12 +1,11 @@
 #!/bin/bash
-set -e
 
 sudo dnf update -y
 sudo dnf install -y docker
 sudo systemctl enable docker
 sudo systemctl start docker
 sudo usermod -aG docker ec2-user
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
-# Wait for docker daemon (dnf update can take several minutes)
-sleep 60
-sudo docker run -d -p 80:80 --name nginx --restart unless-stopped nginx:alpine
+
